@@ -1,0 +1,22 @@
+{
+  "name": "techdegree-project06",
+  "version": "0.0.1",
+  "description": "Collects information about products from an ecommerce site",
+  "main": "scraper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SimenBAndersen/techdegree-project06.git"
+  },
+  "author": "Simen Bjerkeset Andersen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SimenBAndersen/techdegree-project06/issues"
+  },
+  "homepage": "https://github.com/SimenBAndersen/techdegree-project06#readme",
+  "dependencies": {
+    "scrape-it": "^3.3.3"
+  }
+}
