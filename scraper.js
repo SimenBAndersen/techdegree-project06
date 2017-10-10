@@ -10,9 +10,6 @@ const csvHeaders = ["title", "price", "image", "url", "time"];
 const d = new Date();
 const time = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
 
-// time.slice(0,9);
-console.log(time);
-
 // Check for folder called "data"
 if (!fs.existsSync(dataDir)) {
   // If it doesnt exist:
@@ -23,7 +20,7 @@ if (!fs.existsSync(dataDir)) {
 function errorMessage(error) {
   // log error to file with time stamp
   let errorLog = "\n" + time + " " + error.message;
-
+  fs.appendFileSync("scraper-error.log", errorLog);
 
   // provide human friendly message
   console.error("Ops, a problem occurred. For more information, see scraper-error.log");
@@ -94,28 +91,16 @@ const scrapeFunction = (err, page) => {
       scrapeTshirtInfo(page.tshirts[i].tshirtLink);
     }
   } catch (error) {
-    console.error(error.message);
+    errorMessage(error);
   }
 }
 
 try {
   scrapeIt("http://www.shirts4mike.com/shirts.php", tshirtList, scrapeFunction);
 } catch(error) {
-  console.error(error.message);
+  errorMessage(error);
 }
 
-    // If page is down:
-      // Show error describing the issue(human friendly) in the console
-      // Write error to separate file with time-stamp and error
-      // Test this offline..
-  // Scrape information for 8 t-shirts from: http://shirts4mike.com/shirts.php
-  // without hardcoding urls like: http://www.shirts4mike.com/shirt.php?id=101
-    // Get price, title, url and img-url and save to CSV file of correct date
-
-// Use third-party npm package to: Create CSV file
-  // CSV file is named for its date: e.g.2016-11-21
-  // Column headers / columns in this order: title, price, img-url, url, time
-  // Save CSV file inside "data"-folder
 
 // ----- for package.json -----//
 // Edit the file so it is ran when "npm start" is ran
