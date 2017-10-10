@@ -17,28 +17,14 @@ if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir);
 }
 
+// Log errors to "scraper-error.log" and provide a human friendly message
 function errorMessage(error) {
-  // log error to file with time stamp
-  let errorLog = "\n" + time + " " + error.message;
+  let errorLog = "\n" + d + ": " + error.message;
   fs.appendFileSync("scraper-error.log", errorLog);
-
-  // provide human friendly message
-  console.error("Ops, a problem occurred. For more information, see scraper-error.log");
+  console.error("Oops, a problem occurred. For more information, see scraper-error.log");
 }
 
-// If program runs twice:
-  // Overwrite CSV file with new information
-    // Empty current data folder content
-    // Add new files
-
-// If error occurs:
-  // Log/append(to end of file) it in a file called "scraper.error.log"
-  // Log must show: time and error message
-    // [Tue Feb 16 2016 10:02:12 GMT-0800 (PST)] <error message>
-
-// Use third-party npm package (scrape-it) to: Scrape content
-  // Visit: http://shirts4mike.com
-
+// Object to use when scraping info about the tshirts
 const tshirtInfo = {
   tshirt: {
     listItem: "#content",
@@ -53,6 +39,7 @@ const tshirtInfo = {
   }
 };
 
+// Object to use when scraping/getting the url for the tshirts
 const tshirtList = {
   tshirts: {
     listItem: ".products li",
@@ -65,6 +52,9 @@ const tshirtList = {
   }
 };
 
+// Scrape the individual tshirts using the scrape-it package
+// Write the scraped info to a file in the "./data/" folder
+// Console.log's a message when complete for user feedback
 function scrapeTshirtInfo(tshirtLink) {
   let url = "http://www.shirts4mike.com/shirt.php" + tshirtLink.slice(9);
   scrapeIt(url, tshirtInfo, (err, page) => {
@@ -79,12 +69,13 @@ function scrapeTshirtInfo(tshirtLink) {
       const result = json2csv({data: shirtInfo, fields: csvHeaders});
       fs.writeFile("./data/" + time + ".csv", result, function(err) {
         if (err) throw err;
-        console.log('File was submitted');
+        console.log('Information was gathered and file submitted!');
       });
     }
   });
 }
 
+// Loops through the tshirts and scrapes information
 const scrapeFunction = (err, page) => {
   try {
     for (let i = 0; i < page.tshirts.length; i++) {
@@ -95,13 +86,9 @@ const scrapeFunction = (err, page) => {
   }
 }
 
+// Starts the scraping of information of tshirts from www.shirts4mike.com
 try {
   scrapeIt("http://www.shirts4mike.com/shirts.php", tshirtList, scrapeFunction);
 } catch(error) {
   errorMessage(error);
 }
-
-
-// ----- for package.json -----//
-// Edit the file so it is ran when "npm start" is ran
-// ---------------------------//
