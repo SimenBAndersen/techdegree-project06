@@ -1,11 +1,17 @@
 // Require
-const fs = require("fs");
-const scrapeIt = require("scrape-it");
+const fs = require("fs");              // Node file system
+const scrapeIt = require("scrape-it"); // Node.js scraper
+const json2csv = require("json2csv");  // Convert from json to csv
 
 // Globals
 const dataDir = "./data";
-const time = new Date();
-let shirtInfo = []; // Array to store shirt info before converting to CSV
+const shirtInfo = []; // Array to store shirt info before converting to CSV
+const csvHeaders = ["title", "price", "image", "url", "time"];
+const d = new Date();
+const time = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+
+// time.slice(0,9);
+console.log(time);
 
 // Check for folder called "data"
 if (!fs.existsSync(dataDir)) {
@@ -17,7 +23,7 @@ if (!fs.existsSync(dataDir)) {
 function errorMessage(error) {
   // log error to file with time stamp
   let errorLog = "\n" + time + " " + error.message;
-  
+
 
   // provide human friendly message
   console.error("Ops, a problem occurred. For more information, see scraper-error.log");
@@ -65,12 +71,20 @@ const tshirtList = {
 function scrapeTshirtInfo(tshirtLink) {
   let url = "http://www.shirts4mike.com/shirt.php" + tshirtLink.slice(9);
   scrapeIt(url, tshirtInfo, (err, page) => {
-    const tempTshirt = [];
+    const tempTshirt = {};
     tempTshirt.title = page.tshirt[0].title.slice(4);
-    tempTshirt.price = page.tshirt.price;
-    tempTshirt.img = page.tshirt.image;
+    tempTshirt.price = page.tshirt[0].price;
+    tempTshirt.image = page.tshirt[0].image;
     tempTshirt.url = url;
     tempTshirt.time = time;
+    shirtInfo.push(tempTshirt);
+    if (shirtInfo.length === 8) {
+      const result = json2csv({data: shirtInfo, fields: csvHeaders});
+      fs.writeFile("./data/" + time + ".csv", result, function(err) {
+        if (err) throw err;
+        console.log('File was submitted');
+      });
+    }
   });
 }
 
@@ -79,7 +93,6 @@ const scrapeFunction = (err, page) => {
     for (let i = 0; i < page.tshirts.length; i++) {
       scrapeTshirtInfo(page.tshirts[i].tshirtLink);
     }
-    console.log("success");
   } catch (error) {
     console.error(error.message);
   }

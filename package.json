@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/SimenBAndersen/techdegree-project06#readme",
   "dependencies": {
+    "json2csv": "^3.11.4",
     "scrape-it": "^3.3.3"
   }
 }
